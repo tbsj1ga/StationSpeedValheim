@@ -1,0 +1,43 @@
+# --- Сборка ---
+# Каталог build/ НЕ игнорируется намеренно: собранный DLL лежит в репозитории,
+# чтобы его можно было просто скачать и положить в plugins. Если решишь
+# выкладывать бинарники релизами, а не в истории — раскомментируй:
+# build/
+
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+.idea/
+
+# --- Артефакты сборки, которые точно не нужны ---
+*.pdb
+*.mdb
+*.dll.config
+
+# --- Локальные данные мода (привязаны к конкретной машине) ---
+j1ga.stationspeed.cfg
+
+# --- Ссылки на сборки игры, если вдруг скопируешь их сюда ---
+lib/
+refs/
+assembly_valheim.dll
+UnityEngine*.dll
+netstandard.dll
+SoftReferenceableAssets.dll
+BepInEx.dll
+0Harmony.dll
+
+# --- Пакеты для Thunderstore: артефакт релиза, собирается build.ps1 -Package ---
+build/*.zip
+
+# --- Мусор ОС ---
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Дубликат сборки в корне: источник правды — build/StationSpeed.dll ---
+/StationSpeed.dll

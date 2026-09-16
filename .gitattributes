@@ -1,0 +1,13 @@
+# Нормализация переводов строк: в репозитории LF, в рабочем каталоге — как в ОС
+* text=auto
+
+*.cs      text diff=csharp
+*.csproj  text
+*.md      text
+*.json    text
+*.cfg     text
+
+# Бинарники не трогать и не пытаться диффить
+*.dll     binary
+*.png     binary
+*.bin     binary
