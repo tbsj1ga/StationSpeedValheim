@@ -1,4 +1,4 @@
-# Нормализация переводов строк: в репозитории LF, в рабочем каталоге — как в ОС
+# Line endings: LF in the repository, native in the working tree
 * text=auto
 
 *.cs      text diff=csharp
@@ -7,7 +7,7 @@
 *.json    text
 *.cfg     text
 
-# Бинарники не трогать и не пытаться диффить
+# Binaries: never normalise, never diff
 *.dll     binary
 *.png     binary
 *.bin     binary

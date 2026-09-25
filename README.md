@@ -1,152 +1,161 @@
 # StationSpeed
 
-Мод для Valheim: множители скорости рабочих станций — плавильни всех видов,
-жаровни и печь, бродильная бочка, ульи, смолосборники и рост посаженного
-(грядки и саженцы отдельно). По множителю на тип, при желании — на конкретный
-префаб. Настройки сервера действуют у всех клиентов с модом.
+**English** · [Русский](README-RU.md)
 
-Отличие от Valheim Plus / OdinsQOL и им подобных — в том, как это доходит до
-игрока **без модов**: бочки и растения остаются для него согласованными (см.
-ниже), а не показывают «ещё бродит», когда у вас «готово»; а то, что заложил
-он сам, досдвигает хост.
+A Valheim mod: speed multipliers for the working stations — every kind of
+smelter, the cooking stations and the oven, the fermenter, beehives, sap
+extractors and the growth of what you plant (crops and saplings separately).
+One multiplier per kind, optionally one per prefab. The server's settings apply
+on every client with the mod.
 
-Состояние и план работ — в `ROADMAP.md`, история версий — в `CHANGELOG.md`.
+The difference from Valheim Plus / OdinsQOL and the like is how it reaches a
+player **without mods**: barrels and plants stay consistent for them (see
+below) instead of showing "still fermenting" when yours says "done"; and what
+they put in themselves is shifted by the host.
 
-## Как это устроено
+Status and plans are in `ROADMAP.md`, version history in `CHANGELOG.md`.
 
-Игра хранит прогресс станций двумя разными способами, и мод обращается с ними
-по-разному.
+## How it works
 
-**Тикающие станции** — `Smelter` (плавильня, доменная печь, угольная печь,
-прялка, мельница, очиститель эйтра), `CookingStation` (жаровни, печь),
-`Beehive`, `SapCollector`. Раз в секунду клиент-**владелец** станции (обычно
-ближайший игрок) прибавляет прошедшее время к накопителю в ZDO и выдаёт
-продукт, когда набралось `m_secPerProduct`. Это поле экземпляра, и мод ставит
-в него значение префаба, делённое на множитель: в `Awake` и заново для всех
-загруженных станций при любой смене настроек (правка конфига, значения с
-сервера, `stationspeed rescan`). Работает всегда, когда станцией владеет
-клиент с модом. Если владеет игрок без мода — станция идёт с ванильной
-скоростью; картинку (продукты, слоты, топливо) он в любом случае видит
-правильную, потому что она берётся из ZDO. Чтобы станции рядом с хостом
-всегда были у хоста, есть отдельный мод `../HostOwner` (группа `Stations`).
+The game keeps station progress in two different ways, and the mod treats them
+differently.
 
-Топливо. Плавильни жгут его в долях продукта (`m_fuelPerProduct /
-m_secPerProduct` в секунду), так что уголь на слиток не меняется сам собой.
-Печь жжёт своё по часам (`m_secPerFuel`), поэтому `ScaleOvenFuel` (включено)
-делит и его — дров на хлеб как в ванилле; выключено — дрова горят ванильное
-время, и ускорение делает выпечку дешевле. Мельница поверх множителя
-по-прежнему зависит от ветра.
+**Ticking stations** — `Smelter` (smelter, blast furnace, charcoal kiln,
+spinning wheel, windmill, eitr refinery), `CookingStation` (cooking stations,
+oven), `Beehive`, `SapCollector`. Once a second the **owner** client of the
+station (usually the nearest player) adds the elapsed time to an accumulator in
+the ZDO and produces an item when `m_secPerProduct` has built up. That field
+lives on the instance, and the mod sets it to the prefab's value divided by the
+multiplier: in `Awake`, and again for every loaded station whenever the
+settings change (config edit, values from the server, `stationspeed rescan`).
+It works whenever a client with the mod owns the station. If a player without
+the mod owns it, the station runs at vanilla speed; the picture (items, slots,
+fuel) is right for them either way, because it comes from the ZDO. To keep the
+stations near the host with the host, there is a separate mod, HostOwner
+(group `Stations`).
 
-**Станции по метке времени** — `Fermenter` и `Plant`. В ZDO лежит только момент
-старта (`StartTime`, `plantTime`); готовность **каждый клиент считает сам** из
-своей копии длительности (`m_fermentationDuration`, `GetGrowTime()`). Если
-изменить длительность, ваш клиент и ванильный разойдутся в мнении об одной и
-той же бочке: у вас «готово», у него «бродит», и его `Interact` не отправит
-`RPC_Tap`, пока не пройдёт ванильное время. Поэтому длительность не трогается,
-а один раз сдвигается метка: в момент закладки владелец пишет
-`start = now − D + D/k`. Ванильная формула после этого даёт один и тот же ответ
-на любом клиенте, с модом и без. Для растений то же самое с `plantTime`;
-`GetGrowTime()` у них засеян по растению, так что все клиенты сходятся и в ней.
+Fuel. Smelters burn it in fractions of a product (`m_fuelPerProduct /
+m_secPerProduct` per second), so coal per bar does not change by itself. The
+oven burns its fuel by the clock (`m_secPerFuel`), so `ScaleOvenFuel` (on)
+divides that too — wood per bread as in vanilla; off — wood burns for the
+vanilla time and the speed-up makes baking cheaper. The windmill still depends
+on the wind on top of the multiplier.
 
-Рядом со сдвинутой меткой мод оставляет свою отметку (`j1ga.stationspeed.shifted`
-— метка после сдвига): пока она равна метке, сдвиг уже сделан; новая закладка
-даёт новую метку и снимает вопрос сама.
+**Timestamp stations** — `Fermenter` and `Plant`. The ZDO holds only the start
+moment (`StartTime`, `plantTime`); **every client computes readiness itself**
+from its own copy of the duration (`m_fermentationDuration`, `GetGrowTime()`).
+Change the duration and your client and a vanilla one disagree about the same
+barrel: "done" for you, "fermenting" for them, and their `Interact` will not
+send `RPC_Tap` until the vanilla time has passed. So the duration is left alone
+and the timestamp is moved once instead: when the item is added the owner
+writes `start = now − D + D/k`. The vanilla formula then gives the same answer
+on every client, with the mod or without. Plants work the same way with
+`plantTime`; their `GetGrowTime()` is seeded per plant, so all clients agree on
+it too.
 
-**Чужие закладки досдвигает хост.** Если бочку заложил или растение посадил
-игрок без мода, владельцем в тот момент был он, и на нём ничего не сработало;
-но сервер держит все ZDO мира и получает новую метку в течение секунды. Хост
-(или выделенный сервер с модом) раз в `HostScanInterval` секунд проходит по
-объектам мира — по 20 000 за кадр, чтобы не было рывка — и всё, у чего метка
-свежая (моложе пяти минут) и не равна отметке, сдвигает сам. Запись доходит до
-владельца как любая другая: в `ZDOMan.RPC_ZDOData` решает ревизия данных, а не
-владение. Время роста растения без загруженного экземпляра хост считает так
-же, как `Plant.GetGrowTime` — по сиду из ZDO; при первой посадке на владельце
-оба значения сверяются, и если они вдруг разойдутся (обновление игры), в лог
-уйдёт предупреждение, а хост перестанет трогать растения.
+Next to the shifted timestamp the mod leaves its own mark
+(`j1ga.stationspeed.shifted` — the timestamp after the shift): while it equals
+the timestamp, the shift is done; a new load gives a new timestamp and settles
+the question by itself.
 
-**Настройки с сервера.** Через секунду после входа клиента (и при каждом
-изменении настроек) сервер шлёт свои множители, `ByPrefab`, `ScaleOvenFuel` и
-`Enabled` собственным routed RPC; клиент с модом пользуется ими, пока
-подключён, и сразу пересчитывает загруженные станции. Так все владельцы
-согласны в скорости. Пакеты не от сервера игнорируются. Если на сервере мода
-нет — у каждого свой файл.
+**The host shifts other players' loads.** If a player without the mod filled a
+barrel or planted something, they were the owner at that moment and nothing ran
+on their side; but the server holds every ZDO of the world and gets the new
+timestamp within a second. The host (or a dedicated server with the mod) walks
+the world's objects every `HostScanInterval` seconds — 20,000 per frame, so
+there is no hitch — and shifts anything whose timestamp is fresh (younger than
+five minutes) and differs from the mark. The write reaches the owner like any
+other: `ZDOMan.RPC_ZDOData` goes by the data revision, not by ownership. The
+grow time of a plant with no loaded instance is computed the host's way, like
+`Plant.GetGrowTime`, from the seed in the ZDO; on the first planting on an
+owner both values are compared, and should they ever differ (a game update) a
+warning goes to the log and the host stops touching plants.
 
-## Установка
+**Settings from the server.** A second after a client joins (and on every
+settings change) the server sends its multipliers, `ByPrefab`, `ScaleOvenFuel`
+and `Enabled` through its own routed RPC; a client with the mod uses them while
+connected and recalculates the loaded stations at once. So all owners agree on
+the speed. Packets not from the server are ignored. Without the mod on the
+server, everyone uses their own file.
 
-Файл `build/StationSpeed.dll` кладётся в
+## Installation
+
+Through r2modman / Thunderstore, or put `build/StationSpeed.dll` into
 
 ```
 %AppData%\r2modmanPlus-local\Valheim\profiles\Valheim\BepInEx\plugins\StationSpeed\
 ```
 
-или `build.ps1 -Install`. Нужен на клиентах, которые будут владеть станциями
-(на практике — у всех, кто играет с модами), и на хосте: хост досдвигает
-закладки игроков без мода и раздаёт настройки. На выделенном сервере — по
-желанию, ради тех же двух вещей. Игроки без мода подключаются как обычно.
+(or `build.ps1 -Install`). Needed on the clients that will own stations (in
+practice, everyone who plays with mods) and on the host: the host shifts the
+loads of players without the mod and hands out the settings. On a dedicated
+server it is optional, for the same two things. Players without the mod join
+as usual.
 
-## Настройки
+## Settings
 
-`BepInEx\config\j1ga.stationspeed.cfg`, создаётся при первом запуске. Все
-множители по умолчанию 1, допустимо 0.1…100; 2 — вдвое быстрее, 0.5 — вдвое
-медленнее. Правки применяются к загруженным станциям сразу.
+`BepInEx\config\j1ga.stationspeed.cfg`, created on first start. All
+multipliers default to 1, range 0.1…100; 2 is twice as fast, 0.5 half as fast.
+Edits apply to loaded stations at once.
 
-| Раздел | Ключ | Префабы / смысл |
+| Section | Key | Prefabs / meaning |
 |---|---|---|
-| Smelters | `Smelter`, `BlastFurnace`, `CharcoalKiln`, `SpinningWheel`, `Windmill`, `EitrRefinery`, `OtherSmelter` | `smelter`, `blastfurnace`, `charcoal_kiln`, `piece_spinningwheel`, `windmill`, `eitrrefinery`, всё прочее на `Smelter` |
-| Cooking | `CookingStation`, `Oven`, `OtherCooking`, `ScaleOvenFuel` | `piece_cookingstation`, `piece_cookingstation_iron`; `piece_oven`; прочее на `CookingStation`; жечь топливо печи с тем же множителем |
-| Timestamp stations | `Fermenter`, `Crops`, `Saplings` | `fermenter`; растения, не вырастающие в дерево; саженцы деревьев |
+| Smelters | `Smelter`, `BlastFurnace`, `CharcoalKiln`, `SpinningWheel`, `Windmill`, `EitrRefinery`, `OtherSmelter` | `smelter`, `blastfurnace`, `charcoal_kiln`, `piece_spinningwheel`, `windmill`, `eitrrefinery`, anything else with a `Smelter` |
+| Cooking | `CookingStation`, `Oven`, `OtherCooking`, `ScaleOvenFuel` | `piece_cookingstation`, `piece_cookingstation_iron`; `piece_oven`; anything else with a `CookingStation`; burn the oven's fuel with the same multiplier |
+| Timestamp stations | `Fermenter`, `Crops`, `Saplings` | `fermenter`; plants that do not grow into a tree; tree saplings |
 | Collectors | `Beehive`, `SapCollector` | `piece_beehive`, `piece_sapcollector` |
-| Overrides | `ByPrefab` | `префаб=множитель, …` — имеет приоритет над типом |
-| Host | `HostShift`, `HostScanInterval` | досдвиг чужих закладок с хоста; период обхода, с |
-| Sync | `SyncConfig` | сервер раздаёт настройки клиентам (действует на сервере) |
-| General | `Enabled`, `Debug` | выключатель; лог каждой тронутой станции |
+| Overrides | `ByPrefab` | `prefab=multiplier, …` — takes priority over the kind |
+| Host | `HostShift`, `HostScanInterval` | shift other players' loads from the host; scan period, s |
+| Sync | `SyncConfig` | the server hands its settings to clients (set on the server) |
+| General | `Enabled`, `Debug` | master switch; log every station touched |
 
-Консоль (F5): `stationspeed status` — действующие множители (с сервера, если
-подключены к серверу с модом), статистика хоста; `stationspeed rescan` —
-применить множители к загруженным станциям ещё раз.
+Console (F5): `stationspeed status` — the multipliers in effect (the server's,
+if connected to a server with the mod) and host statistics; `stationspeed
+rescan` — apply the multipliers to the loaded stations again.
 
-## Где что лежит
+## Where things are
 
-| Что | Где |
+| What | Where |
 |---|---|
-| Конфиг | `BepInEx\config\j1ga.stationspeed.cfg` |
-| Исходники | `src\StationSpeedPlugin*.cs` — один `partial class`, по файлу на область |
-| Сборка | `build\StationSpeed.dll` |
-| Версия мода (одно место) | константа `Version` в `src\StationSpeedPlugin.cs`; `build.ps1 -Package` подставляет её в `manifest.json` |
-| Проверка ссылок | `check-refs.ps1`, запускается сборкой |
-| Пакет Thunderstore | `thunderstore\` (manifest, icon 256×256, README) → `build\StationSpeed-<версия>.zip` |
-| Лицензия | `LICENSE`, MIT |
+| Config | `BepInEx\config\j1ga.stationspeed.cfg` |
+| Sources | `src\StationSpeedPlugin*.cs` — one `partial class`, one file per area |
+| Build output | `build\StationSpeed.dll` |
+| Mod version (one place) | the `Version` constant in `src\StationSpeedPlugin.cs`; `build.ps1 -Package` writes it into `manifest.json` |
+| Reference check | `check-refs.ps1`, run by the build |
+| Thunderstore package | `thunderstore\` (manifest, icon 256×256, README) → `build\StationSpeed-<version>.zip` |
+| License | `LICENSE`, MIT |
 
-| Файл | Что в нём |
+| File | Contents |
 |---|---|
-| `StationSpeedPlugin.cs` | константы, `Awake`/`Update`/`OnDestroy`, `ShiftStart` с отметкой, `PrefabComponent`, помощники, обработка ошибок |
-| `StationSpeedPlugin.Config.cs` | все `ConfigEntry`, действующие значения (свои или с сервера), выбор множителя по префабу и типу, грядка/саженец |
-| `StationSpeedPlugin.Patches.cs` | применение к тикающим станциям от префаба, перерасчёт `Reapply`, сдвиг на владельце, Harmony-патчи станций |
-| `StationSpeedPlugin.Host.cs` | обход ZDO на хосте, свежесть и отметка, копия `GetGrowTime` |
-| `StationSpeedPlugin.Sync.cs` | routed RPC настроек: отправка с сервера, приём на клиенте, патчи `ZNet` |
-| `StationSpeedPlugin.Commands.cs` | консольная команда `stationspeed` |
+| `StationSpeedPlugin.cs` | constants, `Awake`/`Update`/`OnDestroy`, `ShiftStart` with the mark, `PrefabComponent`, helpers, error handling |
+| `StationSpeedPlugin.Config.cs` | every `ConfigEntry`, the values in effect (own or the server's), multiplier lookup by prefab and kind, crop/sapling |
+| `StationSpeedPlugin.Patches.cs` | applying to ticking stations from the prefab, `Reapply`, the shift on the owner, the stations' Harmony patches |
+| `StationSpeedPlugin.Host.cs` | the ZDO walk on the host, freshness and the mark, the copy of `GetGrowTime` |
+| `StationSpeedPlugin.Sync.cs` | the settings routed RPC: sending from the server, receiving on the client, `ZNet` patches |
+| `StationSpeedPlugin.Commands.cs` | the `stationspeed` console command |
 
-## Сборка
+## Building
 
 ```
-powershell -ExecutionPolicy Bypass -File .\build.ps1            # собрать и проверить ссылки
-powershell -ExecutionPolicy Bypass -File .\build.ps1 -Install   # ... и положить в plugins
-powershell -ExecutionPolicy Bypass -File .\build.ps1 -Package   # ... и собрать zip для Thunderstore
+powershell -ExecutionPolicy Bypass -File .\build.ps1            # build and check references
+powershell -ExecutionPolicy Bypass -File .\build.ps1 -Install   # ... and copy into plugins
+powershell -ExecutionPolicy Bypass -File .\build.ps1 -Package   # ... and make the Thunderstore zip
 ```
 
-Компилятор — `csc.exe` из .NET Framework (C# 5: без `out var`, `?.`, `$""`,
-`nameof`), ссылки — прямо из папки игры и `BepInEx\core` профиля r2modman; пути
-в начале `build.ps1`, `check-refs.ps1` и `src\StationSpeed.csproj`. После сборки
-`check-refs.ps1` через Mono.Cecil сверяет с игрой каждую ссылку на тип и член,
-цели рефлексии (`Plant.GetGrowTime`, `ZDOMan.m_objectsByID`) и цели
-Harmony-патчей.
+The compiler is `csc.exe` from the .NET Framework (C# 5: no `out var`, `?.`,
+`$""`, `nameof`); references come straight from the game folder and the
+r2modman profile's `BepInEx\core`; the paths are at the top of `build.ps1`,
+`check-refs.ps1` and `src\StationSpeed.csproj`. After the build,
+`check-refs.ps1` uses Mono.Cecil to check every type and member reference, the
+reflection targets (`Plant.GetGrowTime`, `ZDOMan.m_objectsByID`) and the Harmony
+patch targets against the game.
 
-## Репозиторий
+## Repository
 
-Локальный git-репозиторий, ветка `main`. Под версионированием: исходники,
-`.csproj`, скрипты, документация, заготовка Thunderstore и
-`build\StationSpeed.dll`. Не под ним: конфиг BepInEx, `bin/`, `obj/`,
-zip-пакеты — см. `.gitignore`.
+Branch `main` on GitHub: https://github.com/TBSjiga/StationSpeed. Versioned:
+sources, `.csproj`, scripts, documentation, the Thunderstore template and
+`build\StationSpeed.dll`. Not versioned: the BepInEx config, `bin/`, `obj/`,
+zip packages — see `.gitignore`.
 
 ## AI assistance
 

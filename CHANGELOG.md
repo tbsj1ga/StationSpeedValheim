@@ -1,52 +1,59 @@
-# История изменений
+# Changelog
 
-Версия задаётся в одном месте — `StationSpeedPlugin.Version` в `src/StationSpeedPlugin.cs`.
+**English** · [Русский](CHANGELOG-RU.md)
+
+The version is set in one place — `StationSpeedPlugin.Version` in `src/StationSpeedPlugin.cs`.
 
 ## 0.2.0
 
-- **Сдвиг с хоста для чужих закладок.** Хост (или выделенный сервер с модом) раз
-  в `HostScanInterval` секунд просматривает ZDO мира по частям на несколько
-  кадров: бочка или растение, у которых метка старта свежая и не совпадает с
-  нашей отметкой в ZDO, только что заложены игроком без мода — и сдвигаются с
-  хоста. Отметка (`j1ga.stationspeed.shifted`, метка старта после сдвига)
-  теперь ставится при любом сдвиге, и владельцем тоже, так что двойного сдвига
-  не бывает; новая закладка в ту же бочку — новая метка, не равная отметке.
-  Время роста растения без экземпляра считается так же, как `Plant.GetGrowTime`
-  (сид из ZDO или из его id, как в `Plant.Awake`); при первой посадке на
-  владельце оба значения сравниваются, расхождение пишется в лог один раз, и
-  тогда хост растения не трогает. Раздел `07 Host`.
-- **Синк настроек с сервера.** Сервер через секунду после входа клиента (и при
-  каждом изменении настроек) шлёт свои множители, `ByPrefab`, `ScaleOvenFuel`
-  и `Enabled` собственным routed RPC `j1ga.stationspeed.config`; клиент с
-  модом пользуется ими вместо своего файла, пока подключён. Пакеты не от
-  сервера и с другой версией формата игнорируются. Без мода на сервере — свой
-  файл. Раздел `08 Sync`, выключается на сервере.
-- **Перерасчёт загруженных станций.** Множители тикающих станций теперь
-  считаются от значения префаба, а не делят текущее, поэтому их можно
-  применять повторно: при любом изменении настроек, при получении настроек с
-  сервера и командой `stationspeed rescan` все загруженные плавильни, жаровни,
-  ульи и смолосборники получают новые значения без перезахода. Если у объекта
-  нет зарегистрированного префаба, `Awake` делит на месте, как раньше.
-- **Грядки и саженцы отдельно:** `Plants` заменён на `Crops` и `Saplings`.
-  Саженец — растение, которое вырастает в дерево (`TreeBase` у выросшего
-  префаба); всё прочее — грядка.
-- **Топливо печи:** `ScaleOvenFuel` (по умолчанию включено) делит и
-  `m_secPerFuel`, чтобы дров на хлеб уходило как в ванилле — плавильни делают
-  это сами, потому что жгут топливо в долях продукта. Значение целое, секунды
-  округляются.
-- Мельница: проверено по IL, что `m_secPerProduct` — главный ограничитель, а
-  сила ветра умножает шаг таймера поверх; множитель работает вместе с ветром.
-- Числа в логе — с точкой независимо от языка системы.
-- `Enabled=false` теперь сразу возвращает загруженным станциям ванильную
-  скорость (через перерасчёт).
+- **The host shifts other players' loads.** The host (or a dedicated server
+  with the mod) walks the world's ZDOs every `HostScanInterval` seconds, split
+  over several frames: a barrel or a plant whose start timestamp is fresh and
+  differs from our mark in the ZDO was just loaded by a player without the mod
+  and is shifted from the host. The mark (`j1ga.stationspeed.shifted`, the
+  start timestamp after the shift) is now set on every shift, by the owner too,
+  so nothing is shifted twice; a new load into the same barrel is a new
+  timestamp that differs from the mark. The grow time of a plant with no
+  instance is computed like `Plant.GetGrowTime` (seed from the ZDO or from its
+  id, as in `Plant.Awake`); on the first planting on an owner both values are
+  compared, a mismatch is logged once, and then the host leaves plants alone.
+  Section `07 Host`.
+- **Settings from the server.** A second after a client joins (and on every
+  settings change) the server sends its multipliers, `ByPrefab`,
+  `ScaleOvenFuel` and `Enabled` through its own routed RPC
+  `j1ga.stationspeed.config`; a client with the mod uses them instead of its
+  own file while connected. Packets not from the server or with another format
+  version are ignored. Without the mod on the server — your own file. Section
+  `08 Sync`, switched off on the server.
+- **Recalculating loaded stations.** Multipliers of ticking stations are now
+  computed from the prefab's value instead of dividing the current one, so they
+  can be applied again: on any settings change, when settings arrive from the
+  server and with `stationspeed rescan` every loaded smelter, cooking station,
+  beehive and sap extractor gets the new values without rejoining. An object
+  with no registered prefab is divided in place in `Awake`, as before.
+- **Crops and saplings separately:** `Plants` is replaced by `Crops` and
+  `Saplings`. A sapling is a plant that grows into a tree (`TreeBase` on the
+  grown prefab); everything else is a crop.
+- **Oven fuel:** `ScaleOvenFuel` (on by default) divides `m_secPerFuel` too, so
+  wood per bread stays as in vanilla — smelters do this by themselves because
+  they burn fuel in fractions of a product. The value is an integer, seconds
+  are rounded.
+- Windmill: checked in the IL that `m_secPerProduct` is the main limit and the
+  wind strength multiplies the timer step on top; the multiplier works
+  together with the wind.
+- Numbers in the log use a dot whatever the system language.
+- `Enabled=false` now returns loaded stations to vanilla speed at once (through
+  the recalculation).
 
 ## 0.1.0
 
-- Первая версия. Множители на плавильню, доменную и угольную печи, прялку,
-  мельницу, очиститель эйтра, жаровни и печь, улей, смолосборник, бочку и рост
-  растений; переопределение по префабу.
-- Тикающие станции: время на продукт делится в `Awake` (действует у владельца).
-- Бочка и растения: одноразовый сдвиг метки старта на владельце, чтобы игрок
-  без мода видел ту же готовность, что и с модом.
-- Консольная команда `stationspeed status`.
-- Сборка `build.ps1`, проверка `check-refs.ps1` (включая цели Harmony-патчей).
+- First version. Multipliers for the smelter, blast furnace and charcoal kiln,
+  spinning wheel, windmill, eitr refinery, cooking stations and the oven,
+  beehive, sap extractor, fermenter and plant growth; per-prefab override.
+- Ticking stations: time per product is divided in `Awake` (applies on the
+  owner).
+- Fermenter and plants: a one-time shift of the start timestamp on the owner,
+  so a player without the mod sees the same readiness as one with it.
+- Console command `stationspeed status`.
+- Build `build.ps1`, reference check `check-refs.ps1` (including Harmony patch
+  targets).

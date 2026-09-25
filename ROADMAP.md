@@ -1,111 +1,117 @@
-# StationSpeed — состояние и план
+# StationSpeed — status and plan
 
-Множители скорости станций. Тикающие станции — время на продукт от значения
-префаба, делённое на множитель (действует у владельца, пересчитывается для
-загруженных при смене настроек); бочка и растения — одноразовый сдвиг метки
-старта с отметкой в ZDO, чтобы ванильный клиент считал готовность так же;
-чужие закладки досдвигает хост; настройки сервера уходят клиентам.
+**English** · [Русский](ROADMAP-RU.md)
 
-Текущая версия: **0.2.0** — собрана и проверена `check-refs.ps1`. В игре
-запускалась 0.1.0 (одиночная + один гость): множители плавилен, угольных печей
-и жаровен применились верно, ошибок от мода нет. Новое в 0.2.0 в игре ещё не
-запускалось. Игра: Valheim 1.0.14 (network version 40), BepInEx 5.4.23.5,
-Harmony 2.9.
+Station speed multipliers. Ticking stations — time per product from the
+prefab's value divided by the multiplier (applies on the owner, recalculated
+for loaded stations when the settings change); fermenter and plants — a
+one-time shift of the start timestamp with a mark in the ZDO, so a vanilla
+client computes readiness the same way; other players' loads are shifted by the
+host; the server's settings go to the clients.
+
+Current version: **0.2.0** — built and checked by `check-refs.ps1`. 0.1.0 ran
+in game (single player + one guest): the smelter, charcoal kiln and cooking
+station multipliers applied correctly, no errors from the mod. What is new in
+0.2.0 has not run in game yet. Game: Valheim 1.0.14 (network version 40),
+BepInEx 5.4.23.5, Harmony 2.9.
 
 ---
 
-## Сделано
+## Done
 
-- [x] **Smelter** (плавильня, доменная, угольная, прялка, мельница, очиститель
-      эйтра, прочее) — `m_secPerProduct = префаб / k` в постфиксе `Awake` и в
-      перерасчёте.
-- [x] **CookingStation** (жаровни, печь, прочее) — `m_cookTime` каждой
-      конверсии от префаба; подгорание в игре — `2 × m_cookTime`,
-      масштабируется вместе. `ScaleOvenFuel` — и `m_secPerFuel` печи.
-- [x] **Beehive**, **SapCollector** — `m_secPerUnit` от префаба.
-- [x] **Fermenter** — prefix/postfix `RPC_AddItem`: если метка `StartTime`
-      изменилась (закладка принята) и мы владелец — сдвиг на `D − D/k` плюс
-      отметка.
-- [x] **Plant** — prefix/postfix `Awake`: если `plantTime` был 0 и появился
-      (только что посажено, мы владелец) — сдвиг на `T − T/k`, где `T` —
-      `GetGrowTime()` через рефлексию. Грядки и саженцы — разные множители
-      (саженец = выросший префаб с `TreeBase`).
-- [x] **Сдвиг с хоста для чужих закладок** — `StationSpeedPlugin.Host.cs`:
-      обход `ZDOMan.m_objectsByID` по 20 000 объектов за кадр раз в
-      `HostScanInterval` с; свежая (< 5 мин) метка без нашей отметки —
-      сдвинуть и отметить. Время роста без экземпляра — копия
-      `Plant.GetGrowTime` по сиду из ZDO, сверяется с оригиналом при первой
-      посадке на владельце.
-- [x] **Синк настроек** — `StationSpeedPlugin.Sync.cs`: routed RPC
-      `j1ga.stationspeed.config` через секунду после `RPC_PeerInfo` и при
-      каждом изменении настроек на сервере; клиент держит значения сервера
-      рядом со своими, пока подключён.
-- [x] **Перерасчёт загруженных станций** при смене настроек, при приходе
-      настроек с сервера и по `stationspeed rescan`.
-- [x] Множитель на тип + `ByPrefab` с приоритетом; консоль `stationspeed
+- [x] **Smelter** (smelter, blast furnace, charcoal kiln, spinning wheel,
+      windmill, eitr refinery, others) — `m_secPerProduct = prefab / k` in an
+      `Awake` postfix and in the recalculation.
+- [x] **CookingStation** (cooking stations, oven, others) — `m_cookTime` of
+      every conversion from the prefab; burning in the game is
+      `2 × m_cookTime`, scaled along. `ScaleOvenFuel` — the oven's
+      `m_secPerFuel` too.
+- [x] **Beehive**, **SapCollector** — `m_secPerUnit` from the prefab.
+- [x] **Fermenter** — prefix/postfix of `RPC_AddItem`: if the `StartTime`
+      timestamp changed (the load was accepted) and we are the owner — shift by
+      `D − D/k` plus the mark.
+- [x] **Plant** — prefix/postfix of `Awake`: if `plantTime` was 0 and appeared
+      (just planted, we are the owner) — shift by `T − T/k`, where `T` is
+      `GetGrowTime()` through reflection. Crops and saplings have separate
+      multipliers (sapling = grown prefab with `TreeBase`).
+- [x] **Host shift of other players' loads** — `StationSpeedPlugin.Host.cs`:
+      walks `ZDOMan.m_objectsByID`, 20,000 objects per frame, every
+      `HostScanInterval` s; a fresh (< 5 min) timestamp without our mark —
+      shift and mark. Grow time without an instance — a copy of
+      `Plant.GetGrowTime` from the seed in the ZDO, compared with the original
+      on the first planting on an owner.
+- [x] **Settings sync** — `StationSpeedPlugin.Sync.cs`: routed RPC
+      `j1ga.stationspeed.config` a second after `RPC_PeerInfo` and on every
+      settings change on the server; the client keeps the server's values next
+      to its own while connected.
+- [x] **Recalculating loaded stations** on a settings change, when settings
+      arrive from the server and on `stationspeed rescan`.
+- [x] Multiplier per kind + `ByPrefab` with priority; console `stationspeed
       status | rescan`.
-- [x] Сборка `build.ps1`, проверка `check-refs.ps1` (типы, члены, рефлексия,
-      цели `[HarmonyPatch]`).
+- [x] Build `build.ps1`, check `check-refs.ps1` (types, members, reflection,
+      `[HarmonyPatch]` targets).
 
-## Проверено по IL игры (1.0.14)
+## Checked against the game's IL (1.0.14)
 
-- [x] `Fermenter.RPC_AddItem` при отказе (не владелец, не пустая, чужой
-      предмет) не пишет ничего — `StartTime` меняется только при приёме,
-      двойного сдвига по этой причине нет.
-- [x] `Fermenter.RPC_Tap` пишет в `StartTime` **int** 0 (ванильная
-      небрежность), long-метка остаётся прежней; `GetFermentationTime` читает
-      long. Для хоста это удобно: после тапа метка равна отметке, новая
-      закладка даёт новую.
-- [x] `Plant.GetGrowTime` = `Lerp(m_growTime, m_growTimeMax, Random.value)` с
-      `InitState(m_seed)`; `m_seed` — из ZDO `seed`, а при нуле
-      `(int)(uid.ID + uid.UserID)` и записывается в ZDO любым клиентом.
-      Одинаков на всех клиентах и воспроизводим без экземпляра.
-- [x] `Smelter.UpdateSmelter`: топливо тратится как `1 / (m_secPerProduct /
-      m_fuelPerProduct)` в секунду — при делении `m_secPerProduct` топливо на
-      продукт не меняется само. Мельница: шаг таймера умножается на
-      `Windmill.GetPowerOutput()`, `m_secPerProduct` остаётся порогом.
-- [x] `CookingStation.UpdateFuel`: `fuel -= dt / m_secPerFuel` (int) по часам —
-      отсюда `ScaleOvenFuel`.
-- [x] `ZDOMan.RPC_ZDOData` принимает данные, если `DataRevision` пришедшего
-      больше локального, владение не проверяется; `ZDOMan.CreateSyncList` на
-      сервере шлёт все объекты сектора с большей ревизией. Запись с хоста
-      доходит до владельца.
-- [x] `ZNet.RPC_PeerInfo` на сервере заканчивается `ZRoutedRpc.AddPeer` —
-      routed RPC к новому пиру можно слать сразу после; шлём через секунду.
+- [x] `Fermenter.RPC_AddItem` on refusal (not the owner, not empty, wrong item)
+      writes nothing — `StartTime` changes only on acceptance, so no double
+      shift from that.
+- [x] `Fermenter.RPC_Tap` writes an **int** 0 into `StartTime` (a vanilla
+      slip), the long timestamp stays; `GetFermentationTime` reads the long.
+      Handy for the host: after a tap the timestamp equals the mark, a new load
+      gives a new one.
+- [x] `Plant.GetGrowTime` = `Lerp(m_growTime, m_growTimeMax, Random.value)`
+      with `InitState(m_seed)`; `m_seed` comes from the ZDO `seed`, and when it
+      is zero `(int)(uid.ID + uid.UserID)` is written into the ZDO by any
+      client. Same on all clients and reproducible without an instance.
+- [x] `Smelter.UpdateSmelter`: fuel is spent as `1 / (m_secPerProduct /
+      m_fuelPerProduct)` per second — dividing `m_secPerProduct` does not
+      change fuel per product by itself. Windmill: the timer step is multiplied
+      by `Windmill.GetPowerOutput()`, `m_secPerProduct` stays the threshold.
+- [x] `CookingStation.UpdateFuel`: `fuel -= dt / m_secPerFuel` (int) by the
+      clock — hence `ScaleOvenFuel`.
+- [x] `ZDOMan.RPC_ZDOData` accepts data if the incoming `DataRevision` is
+      higher than the local one, ownership is not checked;
+      `ZDOMan.CreateSyncList` on the server sends every object of the sector
+      with a higher revision. A write from the host reaches the owner.
+- [x] `ZNet.RPC_PeerInfo` on the server ends with `ZRoutedRpc.AddPeer` — a
+      routed RPC to the new peer can be sent right after; we send after a
+      second.
 
-## Проверить в игре
+## To check in game
 
-- [ ] Порядок `Awake`: `ZNetView.Awake` раньше `Plant.Awake` (игра сама на это
-      полагается), иначе префикс увидит `null` ZDO и сдвига не будет.
-- [ ] Бочка при `k=2`: у второго клиента (без мода) статус «готово» наступает
-      через `D/2` и тап срабатывает.
-- [ ] Хост: гость без мода закладывает бочку и сажает грядку вдали от хоста —
-      в `Debug`-логе хоста появляется `host: fermenter …` / `host: sapling_…`
-      и готовность у гостя наступает раньше.
-- [ ] Синк: гость с модом и другими множителями в файле после входа видит в
-      логе `Settings from the server: …`, а `stationspeed status` у него
-      показывает значения сервера.
-- [ ] `plant grow time check: … same as the game's` в `Debug`-логе при первой
-      посадке — копия `GetGrowTime` совпала.
-- [ ] Плавильня при смене владельца посреди партии: накопитель в ZDO общий,
-      скорость меняется на скорость нового владельца — ожидаемо, но убедиться,
-      что ничего не сбрасывается.
-- [ ] `stationspeed rescan` и правка конфига на лету меняют скорость
-      загруженных станций без перезахода.
-- [ ] Стоимость обхода на хосте: ~470 000 ZDO в текущем мире → ~24 кадра на
-      проход раз в 5 с; посмотреть, не заметно ли на fps.
+- [ ] `Awake` order: `ZNetView.Awake` before `Plant.Awake` (the game relies on
+      it itself), otherwise the prefix sees a `null` ZDO and there is no shift.
+- [ ] Barrel at `k=2`: for a second client (without the mod) "done" comes after
+      `D/2` and the tap works.
+- [ ] Host: a guest without the mod fills a barrel and plants a crop far from
+      the host — the host's `Debug` log shows `host: fermenter …` /
+      `host: sapling_…` and readiness comes earlier for the guest.
+- [ ] Sync: a guest with the mod and other multipliers in their file sees
+      `Settings from the server: …` in the log after joining, and
+      `stationspeed status` shows the server's values.
+- [ ] `plant grow time check: … same as the game's` in the `Debug` log on the
+      first planting — the copy of `GetGrowTime` matched.
+- [ ] Smelter changing owner mid-batch: the accumulator in the ZDO is shared,
+      the speed becomes the new owner's — expected, but make sure nothing
+      resets.
+- [ ] `stationspeed rescan` and a live config edit change the speed of loaded
+      stations without rejoining.
+- [ ] Cost of the walk on the host: ~470,000 ZDOs in the current world → ~24
+      frames per pass every 5 s; see whether it shows on fps.
 
-## Дальше
+## Next
 
-- [x] **Владение станциями на хосте** — вынесено в отдельный мод
-      `../HostOwner` (группа `Stations` включена по умолчанию): хост забирает
-      станции в своей активной зоне у игроков без мода, и множители хоста
-      действуют на них.
-- [ ] Иконка Thunderstore — сейчас заглушка, сгенерированная скриптом.
-- [ ] Миграция старого ключа `Plants` (0.1.0) в `Crops`/`Saplings`, если
-      понадобится кому-то, кроме автора.
+- [x] **Station ownership on the host** — moved into a separate mod, HostOwner
+      (group `Stations` on by default): the host takes stations in its active
+      area from players without the mod, and the host's multipliers apply to
+      them.
+- [x] Thunderstore icon 256×256 in the shared style of the set.
+- [ ] Migrating the old `Plants` key (0.1.0) to `Crops`/`Saplings`, should
+      anyone besides the author need it.
 
-## Идеи
+## Ideas
 
-- Показывать в hover-тексте станции действующий множитель.
-- `stationspeed host` — список сдвинутых хостом за сессию с координатами.
+- Show the multiplier in effect in the station's hover text.
+- `stationspeed host` — the list of what the host shifted this session, with
+  coordinates.

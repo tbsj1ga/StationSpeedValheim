@@ -1,26 +1,26 @@
-# Сверка собранного DLL с текущей версией игры.
+# Checks the built DLL against the current game version.
 #
-#   powershell -ExecutionPolicy Bypass -File .\check-refs.ps1 [-Dll путь]
+#   powershell -ExecutionPolicy Bypass -File .\check-refs.ps1 [-Dll path]
 #
-# build.ps1 вызывает его сам после каждой сборки. Проверяются три вещи:
+# build.ps1 runs it after every build. Three things are checked:
 #
-#   1. Каждая ссылка мода на тип или член (метод, поле) любой сборки из папки
-#      игры и BepInEx резолвится в реальное определение. Компилятор это тоже
-#      проверяет, но только против тех сборок, что лежали рядом при сборке; после
-#      обновления игры несовпадение всплывает уже в рантайме как
-#      MissingMethodException / TypeLoadException. Именно так ломались
-#      AutoRepair, CraftFromContainers и EmoteWheelReworked.
+#   1. Every reference the mod makes to a type or member (method, field) of any
+#      assembly in the game folder or BepInEx resolves to a real definition. The
+#      compiler checks this too, but only against the assemblies present at build
+#      time; after a game update a mismatch surfaces at runtime as a
+#      MissingMethodException / TypeLoadException. That is exactly how
+#      AutoRepair, CraftFromContainers and EmoteWheelReworked broke.
 #
-#   2. Цели рефлексии. Компилятор их не видит вовсе: `typeof(Plant).GetMethod(
-#      "GetGrowTime", …)` или `AccessTools.Method(typeof(Plant), "GetGrowTime")` —
-#      просто строка. Скрипт находит в IL такие вызовы, берёт ближайшие перед ними
-#      ldtoken (тип) и ldstr (имя) и проверяет, что такой член у типа есть.
+#   2. Reflection targets. The compiler never sees them: `typeof(Plant).GetMethod(
+#      "GetGrowTime", ...)` or `AccessTools.Method(typeof(Plant), "GetGrowTime")` is
+#      just a string. The script finds such calls in the IL, takes the nearest
+#      ldtoken (the type) and ldstr (the name) before each and checks the member exists.
 #
-#   3. Цели Harmony-патчей: `[HarmonyPatch(typeof(Character), "RPC_Damage")]` —
-#      тоже строка. Harmony сообщит о пропавшем методе только при загрузке мода,
-#      и тогда не встанет ни один патч сборки. Скрипт читает атрибуты и сверяет.
+#   3. Harmony patch targets: `[HarmonyPatch(typeof(Character), "RPC_Damage")]` is
+#      a string too. Harmony reports a missing method only when the mod loads,
+#      and then none of the assembly's patches apply. The script reads the attributes.
 #
-# Инструмент — Mono.Cecil.dll из BepInEx\core, ничего ставить не нужно.
+# The tool is Mono.Cecil.dll from BepInEx\core; nothing needs installing.
 
 param([string]$Dll = "")
 
@@ -49,7 +49,7 @@ $mod = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($Dll, $rp).MainModule
 $problems = New-Object System.Collections.Generic.List[string]
 $types = 0; $members = 0; $reflect = 0; $patches = 0
 
-# --- 1. типы
+# --- 1. types
 foreach ($tr in $mod.GetTypeReferences()) {
     $types++
     try {
@@ -60,7 +60,7 @@ foreach ($tr in $mod.GetTypeReferences()) {
     }
 }
 
-# --- 1. члены
+# --- 1. members
 foreach ($mr in $mod.GetMemberReferences()) {
     $members++
     $where = $mr.DeclaringType.FullName + "::" + $mr.Name
@@ -72,7 +72,7 @@ foreach ($mr in $mod.GetMemberReferences()) {
     }
 }
 
-# Есть ли у типа (или его предков) член с таким именем нужного рода
+# Whether the type (or a base type) has a member of that name and kind
 function Has-Member($typeRef, $name, $kind) {
     $def = $null
     try { $def = $typeRef.Resolve() } catch { }
@@ -97,7 +97,7 @@ function Walk-Types($t) {
 }
 $allTypes = @($mod.Types | ForEach-Object { Walk-Types $_ })
 
-# --- 2. рефлексия: System.Type.GetX и HarmonyLib.AccessTools.X
+# --- 2. reflection: System.Type.GetX and HarmonyLib.AccessTools.X
 $kinds = @{
     "GetField" = "field"; "GetMethod" = "method"; "GetProperty" = "property";
     "Field" = "field"; "DeclaredField" = "field"; "Method" = "method"; "DeclaredMethod" = "method";
@@ -115,8 +115,8 @@ foreach ($t in $allTypes) {
             if ($owner -ne "System.Type" -and $owner -ne "HarmonyLib.AccessTools") { continue }
             if (-not $kinds.ContainsKey($callee.Name)) { continue }
 
-            # назад до ldstr (имя), затем до первого ldtoken перед ним (тип): у GetMethod
-            # с массивом типов параметров между ldstr и вызовом лежат ldtoken параметров
+            # back to the ldstr (name), then to the first ldtoken before it (the type): a GetMethod
+            # with a parameter-type array has the parameters' ldtokens between the ldstr and the call
             $name = $null; $type = $null
             for ($j = $i - 1; $j -ge 0 -and $j -ge $i - 60; $j--) {
                 $p = $ins[$j]
@@ -139,7 +139,7 @@ foreach ($t in $allTypes) {
     }
 }
 
-# --- 3. Harmony: [HarmonyPatch(typeof(T), "name")] на классах и методах
+# --- 3. Harmony: [HarmonyPatch(typeof(T), "name")] on classes and methods
 function Check-PatchAttrs($owner, $attrs) {
     foreach ($a in $attrs) {
         if ($a.AttributeType.Name -ne "HarmonyPatch") { continue }

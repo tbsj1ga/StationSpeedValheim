@@ -1,7 +1,7 @@
-# --- Сборка ---
-# Каталог build/ НЕ игнорируется намеренно: собранный DLL лежит в репозитории,
-# чтобы его можно было просто скачать и положить в plugins. Если решишь
-# выкладывать бинарники релизами, а не в истории — раскомментируй:
+# --- Build ---
+# build/ is deliberately NOT ignored: the built DLL lives in the repository so it
+# can simply be downloaded and dropped into plugins. To ship binaries as releases
+# instead of in history, uncomment:
 # build/
 
 bin/
@@ -13,15 +13,15 @@ obj/
 .vscode/
 .idea/
 
-# --- Артефакты сборки, которые точно не нужны ---
+# --- Build artefacts nobody needs ---
 *.pdb
 *.mdb
 *.dll.config
 
-# --- Локальные данные мода (привязаны к конкретной машине) ---
+# --- The mod's local data (tied to a machine) ---
 j1ga.stationspeed.cfg
 
-# --- Ссылки на сборки игры, если вдруг скопируешь их сюда ---
+# --- Game assemblies, should they ever get copied in here ---
 lib/
 refs/
 assembly_valheim.dll
@@ -31,13 +31,16 @@ SoftReferenceableAssets.dll
 BepInEx.dll
 0Harmony.dll
 
-# --- Пакеты для Thunderstore: артефакт релиза, собирается build.ps1 -Package ---
+# --- Thunderstore packages: a release artefact, produced by build.ps1 -Package ---
 build/*.zip
 
-# --- Мусор ОС ---
+# --- OS clutter ---
 Thumbs.db
 desktop.ini
 .DS_Store
 
-# --- Дубликат сборки в корне: источник правды — build/StationSpeed.dll ---
+# --- A stray copy of the build in the root: build/StationSpeed.dll is the source of truth ---
 /StationSpeed.dll
+
+# --- Icon sources and prompts live outside the repository ---
+ICON-PROMPT.md

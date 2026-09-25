@@ -9,12 +9,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NoWarn>0618</NoWarn>
-    <!-- Один источник правды с build.ps1: собранный DLL лежит в build -->
+    <!-- One source of truth with build.ps1: the built DLL lives in build\ -->
     <OutputPath>..\build\</OutputPath>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DebugType>none</DebugType>
 
-    <!-- Поправь эти два пути, если игра или профиль r2modman переедут -->
+    <!-- Build-time only: edit these two paths if the game or the r2modman profile moves -->
     <ValheimManaged>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed</ValheimManaged>
     <BepInExCore>$(AppData)\r2modmanPlus-local\Valheim\profiles\Valheim\BepInEx\core</BepInExCore>
   </PropertyGroup>
