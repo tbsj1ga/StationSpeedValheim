@@ -32,6 +32,34 @@ Install on every client that plays with mods and on the host; optional on a
 dedicated server (for the host shift and the settings). Players without the
 mod join as usual.
 
+## Compatibility
+
+Tested with **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepInExPack_Valheim 5.4.2351).
+
+## Who needs it
+
+| Who | What |
+|---|---|
+| Players with the mod | stations they own run at the configured speed |
+| Host | recommended: shifts barrels/plants of players without the mod and sends its settings |
+| Dedicated server | optional, for the same two things |
+| Players without the mod | join as usual; barrels and plants stay consistent for them |
+
+## Known conflicts
+
+- Other mods that change station or growth speed (Valheim Plus, OdinsQOL and similar) — the multipliers stack or fight. Use one of them for each kind of station.
+- Mods that change a fermenter's duration or a plant's grow time on one client only break the same thing this mod avoids: vanilla clients disagreeing about readiness.
+
+## Bugs and feedback
+
+GitHub Issues: https://github.com/tbsj1ga/StationSpeedValheim/issues — please attach `BepInEx/LogOutput.log`.
+
+## Screenshots
+
+<!-- Uncomment each line once the file is in docs/media/ and pushed. -->
+<!-- ![a smelter producing bars faster](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.gif) -->
+<!-- ![`stationspeed status` in the console](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/status.png) -->
+
 Source, documentation and the changelog: https://github.com/tbsj1ga/StationSpeedValheim
 
 *Developed with the help of an AI assistant (Claude by Anthropic); the design
