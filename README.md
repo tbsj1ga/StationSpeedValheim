@@ -152,7 +152,7 @@ patch targets against the game.
 
 ## Repository
 
-Branch `main` on GitHub: https://github.com/TBSjiga/StationSpeed. Versioned:
+Branch `main` on GitHub: https://github.com/tbsj1ga/StationSpeedValheim. Versioned:
 sources, `.csproj`, scripts, documentation, the Thunderstore template and
 `build\StationSpeed.dll`. Not versioned: the BepInEx config, `bin/`, `obj/`,
 zip packages — see `.gitignore`.

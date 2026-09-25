@@ -1,7 +1,7 @@
 {
   "name": "StationSpeed",
   "version_number": "0.0.0",
-  "website_url": "https://github.com/TBSjiga/StationSpeed",
+  "website_url": "https://github.com/tbsj1ga/StationSpeedValheim",
   "description": "Speed multipliers for smelters, kilns, cooking stations, fermenters, beehives, sap extractors and plant growth. Fermenters and plants stay consistent for players without the mod.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2350"

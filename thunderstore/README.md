@@ -32,6 +32,8 @@ Install on every client that plays with mods and on the host; optional on a
 dedicated server (for the host shift and the settings). Players without the
 mod join as usual.
 
+Source, documentation and the changelog: https://github.com/tbsj1ga/StationSpeedValheim
+
 *Developed with the help of an AI assistant (Claude by Anthropic); the design
 decisions, verification against the game code and in-game testing are the
 author's.*

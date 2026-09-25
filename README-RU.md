@@ -145,7 +145,7 @@ Harmony-патчей.
 
 ## Репозиторий
 
-Ветка `main` на GitHub: https://github.com/TBSjiga/StationSpeed. Под версионированием: исходники,
+Ветка `main` на GitHub: https://github.com/tbsj1ga/StationSpeedValheim. Под версионированием: исходники,
 `.csproj`, скрипты, документация, заготовка Thunderstore и
 `build\StationSpeed.dll`. Не под ним: конфиг BepInEx, `bin/`, `obj/`,
 zip-пакеты — см. `.gitignore`.
