@@ -102,7 +102,7 @@ BepInEx 5.4.23.5, Harmony 2.9.
 
 ## Next
 
-- [x] **Station ownership on the host** — moved into a separate mod, HostOwner
+- [x] **Station ownership on the host** — moved into a separate mod, [HostOwner](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/)
       (group `Stations` on by default): the host takes stations in its active
       area from players without the mod, and the host's multipliers apply to
       them.

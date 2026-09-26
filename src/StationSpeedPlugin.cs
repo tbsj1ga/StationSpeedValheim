@@ -37,7 +37,7 @@ namespace StationSpeed
     {
         public const string Guid = "j1ga.stationspeed";
         public const string Name = "Station Speed";
-        public const string Version = "0.2.1";
+        public const string Version = "0.2.2";
 
         // Harmony patches are static; they reach the running plugin through this.
         public static StationSpeedPlugin Instance;

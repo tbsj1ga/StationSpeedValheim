@@ -4,6 +4,11 @@
 
 The version is set in one place — `StationSpeedPlugin.Version` in `src/StationSpeedPlugin.cs`.
 
+## 0.2.2
+
+- Package page: the crops animation now runs from planting to harvest; HostOwner is a link to
+  its Thunderstore page. No code changes.
+
 ## 0.2.1
 
 - Package page: a gallery of animations and screenshots, and a section with the author's

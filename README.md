@@ -31,7 +31,7 @@ settings change (config edit, values from the server, `stationspeed rescan`).
 It works whenever a client with the mod owns the station. If a player without
 the mod owns it, the station runs at vanilla speed; the picture (items, slots,
 fuel) is right for them either way, because it comes from the ZDO. To keep the
-stations near the host with the host, there is a separate mod, HostOwner
+stations near the host with the host, there is a separate mod, [HostOwner](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/)
 (group `Stations`).
 
 Fuel. Smelters burn it in fractions of a product (`m_fuelPerProduct /
