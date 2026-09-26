@@ -77,8 +77,8 @@ m_secPerProduct` в секунду), так что уголь на слиток 
 
 | | |
 |---|---|
-| ![Плавильня с множителем скорости](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![Грядка растёт за секунды](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
-| Плавильня с множителем скорости | Грядка растёт за секунды |
+| ![Плавильня с множителем скорости](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![От посадки до урожая за секунды](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
+| Плавильня с множителем скорости | От посадки до урожая за секунды |
 
 ## Совместимость
 

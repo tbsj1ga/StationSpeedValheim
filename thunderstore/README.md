@@ -8,8 +8,8 @@ with the mod.
 
 | | |
 |---|---|
-| ![A smelter with a speed multiplier](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![Crops grow in seconds](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
-| A smelter with a speed multiplier | Crops grow in seconds |
+| ![A smelter with a speed multiplier](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![From planting to harvest in seconds](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
+| A smelter with a speed multiplier | From planting to harvest in seconds |
 
 What makes it different from other speed mods is how it treats **players
 without the mod**:
