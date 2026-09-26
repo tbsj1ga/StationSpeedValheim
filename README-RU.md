@@ -73,6 +73,13 @@ m_secPerProduct` в секунду), так что уголь на слиток 
 согласны в скорости. Пакеты не от сервера игнорируются. Если на сервере мода
 нет — у каждого свой файл.
 
+## Скриншоты
+
+| | |
+|---|---|
+| ![Плавильня с множителем скорости](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![Грядка растёт за секунды](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
+| Плавильня с множителем скорости | Грядка растёт за секунды |
+
 ## Совместимость
 
 Проверено на **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepInExPack_Valheim 5.4.2351).
@@ -94,12 +101,6 @@ m_secPerProduct` в секунду), так что уголь на слиток 
 ## Ошибки и отзывы
 
 GitHub Issues: https://github.com/tbsj1ga/StationSpeedValheim/issues — приложите `BepInEx/LogOutput.log`.
-
-## Скриншоты
-
-<!-- Раскомментируйте строку, когда файл лежит в docs/media/ и отправлен на GitHub. -->
-<!-- ![плавильня выдаёт слитки быстрее](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.gif) -->
-<!-- ![`stationspeed status` в консоли](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/status.png) -->
 
 ## Установка
 
@@ -177,6 +178,15 @@ Harmony-патчей.
 `.csproj`, скрипты, документация, заготовка Thunderstore и
 `build\StationSpeed.dll`. Не под ним: конфиг BepInEx, `bin/`, `obj/`,
 zip-пакеты — см. `.gitignore`.
+
+## Другие моды j1gA
+
+| | Мод |
+|---|---|
+| [![LivingMap](https://raw.githubusercontent.com/tbsj1ga/LivingMapValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/) | **[LivingMap](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/)** — Постройки, дороги и вырубки на карте и мини-карте. |
+| [![WeaponArts](https://raw.githubusercontent.com/tbsj1ga/WeaponArtsValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/) | **[WeaponArts](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/)** — Одна клавиша — своя активная способность у каждого оружия: стаггер, таунт, хилы, берсерк, криты. |
+| [![ExtendedBosses](https://raw.githubusercontent.com/tbsj1ga/ExtendedBossesValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/) | **[ExtendedBosses](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/)** — Боссы как рейды: фазы, адды, гнёзда, щиты, метки — из ванильных частей. |
+| [![HostOwner](https://raw.githubusercontent.com/tbsj1ga/HostOwnerValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/) | **[HostOwner](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/)** — Хост забирает владение станциями и боссами рядом, чтобы его моды работали для всех. |
 
 ## Помощь ИИ
 

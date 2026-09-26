@@ -78,6 +78,13 @@ connected and recalculates the loaded stations at once. So all owners agree on
 the speed. Packets not from the server are ignored. Without the mod on the
 server, everyone uses their own file.
 
+## Screenshots
+
+| | |
+|---|---|
+| ![A smelter with a speed multiplier](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![Crops grow in seconds](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
+| A smelter with a speed multiplier | Crops grow in seconds |
+
 ## Compatibility
 
 Tested with **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepInExPack_Valheim 5.4.2351).
@@ -99,12 +106,6 @@ Tested with **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepIn
 ## Bugs and feedback
 
 GitHub Issues: https://github.com/tbsj1ga/StationSpeedValheim/issues — please attach `BepInEx/LogOutput.log`.
-
-## Screenshots
-
-<!-- Uncomment each line once the file is in docs/media/ and pushed. -->
-<!-- ![a smelter producing bars faster](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.gif) -->
-<!-- ![`stationspeed status` in the console](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/status.png) -->
 
 ## Installation
 
@@ -184,6 +185,15 @@ Branch `main` on GitHub: https://github.com/tbsj1ga/StationSpeedValheim. Version
 sources, `.csproj`, scripts, documentation, the Thunderstore template and
 `build\StationSpeed.dll`. Not versioned: the BepInEx config, `bin/`, `obj/`,
 zip packages — see `.gitignore`.
+
+## More mods by j1gA
+
+| | Mod |
+|---|---|
+| [![LivingMap](https://raw.githubusercontent.com/tbsj1ga/LivingMapValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/) | **[LivingMap](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/)** — Your buildings, roads and cleared forest on the map and the minimap. |
+| [![WeaponArts](https://raw.githubusercontent.com/tbsj1ga/WeaponArtsValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/) | **[WeaponArts](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/)** — One key, one active ability per weapon: stagger, taunt, heals, berserk, crits. |
+| [![ExtendedBosses](https://raw.githubusercontent.com/tbsj1ga/ExtendedBossesValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/) | **[ExtendedBosses](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/)** — Raid-style boss fights: phases, adds, nests, shields, marks — built from vanilla parts. |
+| [![HostOwner](https://raw.githubusercontent.com/tbsj1ga/HostOwnerValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/) | **[HostOwner](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/)** — The host takes ownership of stations and bosses near it, so its mods work for everyone. |
 
 ## AI assistance
 

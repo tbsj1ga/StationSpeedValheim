@@ -4,6 +4,11 @@
 
 The version is set in one place — `StationSpeedPlugin.Version` in `src/StationSpeedPlugin.cs`.
 
+## 0.2.1
+
+- Package page: a gallery of animations and screenshots, and a section with the author's
+  other mods (icons, one line each, links). No code changes.
+
 ## 0.2.0
 
 - **The host shifts other players' loads.** The host (or a dedicated server

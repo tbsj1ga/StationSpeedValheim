@@ -6,6 +6,11 @@ fermenter, beehive, sap extractor, crops and saplings. One multiplier per kind,
 optional overrides per prefab. The server's settings apply on every client
 with the mod.
 
+| | |
+|---|---|
+| ![A smelter with a speed multiplier](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.webp) | ![Crops grow in seconds](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/crops.webp) |
+| A smelter with a speed multiplier | Crops grow in seconds |
+
 What makes it different from other speed mods is how it treats **players
 without the mod**:
 
@@ -54,14 +59,12 @@ Tested with **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepIn
 
 GitHub Issues: https://github.com/tbsj1ga/StationSpeedValheim/issues — please attach `BepInEx/LogOutput.log`.
 
-## Screenshots
+## More mods by j1gA
 
-<!-- Uncomment each line once the file is in docs/media/ and pushed. -->
-<!-- ![a smelter producing bars faster](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/smelter.gif) -->
-<!-- ![`stationspeed status` in the console](https://raw.githubusercontent.com/tbsj1ga/StationSpeedValheim/main/docs/media/status.png) -->
+| | Mod |
+|---|---|
+| [![LivingMap](https://raw.githubusercontent.com/tbsj1ga/LivingMapValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/) | **[LivingMap](https://thunderstore.io/c/valheim/p/j1gA/LivingMap/)** — Your buildings, roads and cleared forest on the map and the minimap. |
+| [![WeaponArts](https://raw.githubusercontent.com/tbsj1ga/WeaponArtsValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/) | **[WeaponArts](https://thunderstore.io/c/valheim/p/j1gA/WeaponArts/)** — One key, one active ability per weapon: stagger, taunt, heals, berserk, crits. |
+| [![ExtendedBosses](https://raw.githubusercontent.com/tbsj1ga/ExtendedBossesValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/) | **[ExtendedBosses](https://thunderstore.io/c/valheim/p/j1gA/ExtendedBosses/)** — Raid-style boss fights: phases, adds, nests, shields, marks — built from vanilla parts. |
+| [![HostOwner](https://raw.githubusercontent.com/tbsj1ga/HostOwnerValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/) | **[HostOwner](https://thunderstore.io/c/valheim/p/j1gA/HostOwner/)** — The host takes ownership of stations and bosses near it, so its mods work for everyone. |
 
-Source, documentation and the changelog: https://github.com/tbsj1ga/StationSpeedValheim
-
-*Developed with the help of an AI assistant (Claude by Anthropic); the design
-decisions, verification against the game code and in-game testing are the
-author's.*

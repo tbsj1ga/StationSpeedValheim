@@ -1,7 +1,7 @@
 # Media for the README
 
-Put these files here, push, then uncomment the matching lines in `README.md`, `README-RU.md` and `thunderstore/README.md`.
-Keep GIFs 4-8 s, 640-800 px wide, under 5 MB.
+- `icon-128.png` — the icon for the "More mods by j1gA" sections of the other mods
+- `smelter.webp` — A smelter with a speed multiplier
+- `crops.webp` — Crops grow in seconds
 
-- `smelter.gif` — a smelter producing bars faster
-- `status.png` — `stationspeed status` in the console
+Animations: WebP, 4-8 s, 640-1280 px wide, under 4 MB.
