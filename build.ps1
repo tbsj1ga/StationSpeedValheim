@@ -3,6 +3,7 @@
 #   powershell -ExecutionPolicy Bypass -File .\build.ps1            # build and check references
 #   powershell -ExecutionPolicy Bypass -File .\build.ps1 -Install   # ... and copy into plugins
 #   powershell -ExecutionPolicy Bypass -File .\build.ps1 -Package   # ... and zip for Thunderstore
+#   powershell -ExecutionPolicy Bypass -File .\build.ps1 -Nexus     # ... zip, and the Nexus Mods kit (nexus.ps1)
 #   powershell -ExecutionPolicy Bypass -File .\build.ps1 -NoCheck   # skip the reference check
 #
 # The compiler is csc.exe from the .NET Framework, present on every Windows. It only
@@ -15,7 +16,7 @@
 # assemblies (reflection and Harmony patch targets too) with what they actually contain -
 # the compiler cannot guarantee that once the game updates, and it would fail at runtime.
 
-param([switch]$Install, [switch]$Package, [switch]$NoCheck)
+param([switch]$Install, [switch]$Package, [switch]$NoCheck, [switch]$Nexus)
 
 $ErrorActionPreference = "Stop"
 $root    = $PSScriptRoot
@@ -61,7 +62,7 @@ if ($Install) {
     Write-Host "Installed to $plugins"
 }
 
-if ($Package) {
+if ($Package -or $Nexus) {
     # Thunderstore package: manifest.json (version filled in from the source), icon.png
     # 256x256, README.md, CHANGELOG.md and the DLL, all at the root of the archive.
     $ts   = "$root\thunderstore"
@@ -82,4 +83,10 @@ if ($Package) {
     } finally {
         Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
     }
+}
+
+if ($Nexus) {
+    # The Nexus Mods kit from the package just made: archive, BBCode description, gallery
+    & powershell -NoProfile -ExecutionPolicy Bypass -File "$root\nexus.ps1" -Version $ver
+    if ($LASTEXITCODE -ne 0) { throw "nexus.ps1 failed" }
 }
