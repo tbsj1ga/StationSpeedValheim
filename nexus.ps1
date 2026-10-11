@@ -50,6 +50,8 @@ try {
     New-Item -ItemType Directory -Force $dir | Out-Null
     Copy-Item "$tmp\ts\*.dll" $dir
     Copy-Item "$tmp\ts\README.md" $dir
+    $pubIcon = Join-Path ([System.IO.Path]::GetTempPath()) ("nexus-icon-" + [guid]::NewGuid().ToString("N") + ".png")
+    Copy-Item "$tmp\ts\icon.png" $pubIcon
     Copy-Item "$tmp\ts\CHANGELOG.md" $dir
     [System.IO.Compression.ZipFile]::CreateFromDirectory("$tmp\pkg", "$out\$mod-$Version-nexus.zip")
 } finally {
@@ -182,10 +184,9 @@ $bb += "`n`n[line]`nFull documentation, changelog and the Russian version: [url=
 $media = @([regex]::Matches($readme, '/docs/media/([\w.-]+\.(?:png|webp|gif|jpg))') | ForEach-Object { $_.Groups[1].Value } |
     Where-Object { $_ -notlike "icon-*" } | Select-Object -Unique)
 
-if (-not $IconSource) {
-    $IconSource = "$env:USERPROFILE\Documents\icons-src\$mod-1254px.png"
-    if (-not (Test-Path $IconSource)) { $IconSource = "$root\thunderstore\icon.png" }
-}
+# The cover is drawn from the icon in the package. A large original (icons-src) is used
+# instead only when it is the same picture - a stale original must not end up on Nexus.
+if (-not $IconSource) { $IconSource = "$env:USERPROFILE\Documents\icons-src\$mod-1254px.png" }
 
 $py = Get-Command python -ErrorAction SilentlyContinue
 $pyOk = $false
@@ -231,9 +232,20 @@ def font(size, bold):
             return ImageFont.truetype(p, size)
     return ImageFont.load_default()
 
-def cover(icon, title, summary, dst):
+def same(a, b):
+    a = a.convert("RGB").resize((32, 32), Image.LANCZOS).getdata()
+    b = b.convert("RGB").resize((32, 32), Image.LANCZOS).getdata()
+    return sum(abs(x - y) for p, q in zip(a, b) for x, y in zip(p, q)) / (32 * 32 * 3) < 12
+
+def cover(big_icon, icon, title, summary, dst):
     W, H = 1280, 720
     ic = Image.open(icon).convert("RGBA")
+    if os.path.exists(big_icon):
+        big = Image.open(big_icon).convert("RGBA")
+        if same(big, ic):
+            ic = big
+        else:
+            print("  %s is not the published icon, the cover uses the package's icon" % big_icon)
     bg = ic.convert("RGB").resize((W, W), Image.LANCZOS).crop((0, (W - H) // 2, W, (W - H) // 2 + H))
     bg = bg.filter(ImageFilter.GaussianBlur(40))
     bg = Image.blend(bg, Image.new("RGB", (W, H), (10, 10, 14)), 0.55)
@@ -279,8 +291,8 @@ def cover(icon, title, summary, dst):
 
 args = sys.argv[1:]
 out = args[0]
-cover(args[1], args[2], args[3], os.path.join(out, "00-cover.png"))
-for k, src in enumerate(args[4:], 1):
+cover(args[1], args[2], args[3], args[4], os.path.join(out, "00-cover.png"))
+for k, src in enumerate(args[5:], 1):
     base = "%02d-%s" % (k, os.path.splitext(os.path.basename(src))[0])
     if src.lower().endswith(".webp"):
         r = gif(src, os.path.join(out, base + ".gif"))
@@ -291,9 +303,9 @@ for k, src in enumerate(args[4:], 1):
     try {
         $srcs = @($media | ForEach-Object { "$root\docs\media\$_" } | Where-Object { Test-Path $_ })
         $env:NEXUS_GIF_MB = $GifLimitMB.ToString([Globalization.CultureInfo]::InvariantCulture)
-        & python -I $script "$out\gallery" $IconSource $mod $manifest.description @srcs
+        & python -I $script "$out\gallery" $IconSource $pubIcon $mod $manifest.description @srcs
         if ($LASTEXITCODE -ne 0) { throw "gallery script failed" }
-    } finally { Remove-Item $script -Force -ErrorAction SilentlyContinue }
+    } finally { Remove-Item $script, $pubIcon -Force -ErrorAction SilentlyContinue }
 } else {
     Write-Warning "Python with Pillow not found: no cover and no GIFs, still images only"
     foreach ($m in $media) {
