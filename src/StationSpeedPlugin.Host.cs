@@ -20,16 +20,21 @@ namespace StationSpeed
     // reaches the owner like any other ZDO change: revisions, not ownership, decide.
     public partial class StationSpeedPlugin
     {
-        private FieldInfo _fiObjectsByID;
+        private FieldInfo _fiObjectsBySector;
 
         // prefab hash -> the component on the prefab: durations, grown prefabs, the name
         private readonly Dictionary<int, Fermenter> _fermenterPrefabs = new Dictionary<int, Fermenter>();
         private readonly Dictionary<int, Plant> _plantPrefabs = new Dictionary<int, Plant>();
         private ZNetScene _indexedScene;
 
-        // a snapshot of the world's objects, walked over several frames
-        private readonly List<ZDO> _scan = new List<ZDO>();
+        // The world's objects, walked over several frames through the game's own per-sector
+        // lists. 0.2.2 copied the whole id table into a list first: over a million ZDOs in a
+        // big world, a 30 ms hitch every pass. A sector is always finished within one frame,
+        // so its list never changes under the walk; an object that moves to a sector not yet
+        // walked is seen twice, which the mark makes harmless.
+        private List<ZDO>[] _sectors;
         private int _scanCursor = -1;
+        private int _scanCount;
         private float _nextScan;
         private const int ScanPerFrame = 20000;
 
@@ -44,18 +49,18 @@ namespace StationSpeed
 
         private void FindHostFields()
         {
-            FieldInfo fi = typeof(ZDOMan).GetField("m_objectsByID", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            if (fi != null && typeof(Dictionary<ZDOID, ZDO>).IsAssignableFrom(fi.FieldType))
-                _fiObjectsByID = fi;
+            FieldInfo fi = typeof(ZDOMan).GetField("m_objectsBySector", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (fi != null && fi.FieldType == typeof(List<ZDO>[]))
+                _fiObjectsBySector = fi;
             else
-                Logger.LogWarning("ZDOMan.m_objectsByID was not found or has an unexpected type; the host will not shift fermenters and plants of players without the mod.");
+                Logger.LogWarning("ZDOMan.m_objectsBySector was not found or has an unexpected type; the host will not shift fermenters and plants of players without the mod.");
         }
 
         private bool HostActive
         {
             get
             {
-                if (_fiObjectsByID == null || !Active || !_cfgHostShift.Value) return false;
+                if (_fiObjectsBySector == null || !Active || !_cfgHostShift.Value) return false;
                 ZNet znet = ZNet.instance;
                 return znet != null && znet.IsServer() && ZDOMan.instance != null && ZNetScene.instance != null;
             }
@@ -82,7 +87,7 @@ namespace StationSpeed
 
         private void ResetScan()
         {
-            _scan.Clear();
+            _sectors = null;
             _scanCursor = -1;
         }
 
@@ -90,12 +95,10 @@ namespace StationSpeed
         {
             IndexPrefabs();
             if (_fermenterPrefabs.Count == 0 && _plantPrefabs.Count == 0) return false;
-            Dictionary<ZDOID, ZDO> all = _fiObjectsByID.GetValue(ZDOMan.instance) as Dictionary<ZDOID, ZDO>;
-            if (all == null) return false;
-            _scan.Clear();
-            if (_scan.Capacity < all.Count) _scan.Capacity = all.Count;
-            foreach (ZDO zdo in all.Values) _scan.Add(zdo);
+            _sectors = _fiObjectsBySector.GetValue(ZDOMan.instance) as List<ZDO>[];
+            if (_sectors == null) return false;
             _scanCursor = 0;
+            _scanCount = 0;
             return true;
         }
 
@@ -103,12 +106,27 @@ namespace StationSpeed
         {
             ZNet znet = ZNet.instance;
             ZDOMan man = ZDOMan.instance;
-            DateTime now = znet.GetTime();
-            int end = Math.Min(_scan.Count, _scanCursor + ScanPerFrame);
-            for (; _scanCursor < end; _scanCursor++) Examine(_scan[_scanCursor], now, man);
-            if (_scanCursor >= _scan.Count)
+            // a new world, or the game rebuilt its sectors: start over on the next pass
+            if (!ReferenceEquals(_fiObjectsBySector.GetValue(man), _sectors))
             {
-                _lastScanCount = _scan.Count;
+                ResetScan();
+                return;
+            }
+            DateTime now = znet.GetTime();
+            int budget = ScanPerFrame;
+            while (budget > 0 && _scanCursor < _sectors.Length)
+            {
+                List<ZDO> sector = _sectors[_scanCursor++];
+                budget--;
+                if (sector == null) continue;
+                int n = sector.Count;
+                for (int i = 0; i < n; i++) Examine(sector[i], now, man);
+                budget -= n;
+                _scanCount += n;
+            }
+            if (_scanCursor >= _sectors.Length)
+            {
+                _lastScanCount = _scanCount;
                 ResetScan();
                 _nextScan = Time.time + _cfgHostInterval.Value;
             }

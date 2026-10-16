@@ -4,6 +4,14 @@
 
 The version is set in one place — `StationSpeedPlugin.Version` in `src/StationSpeedPlugin.cs`.
 
+## 0.2.3
+
+- **No more hitch every few seconds on the host.** Each pass over the world started by
+  copying the game's whole object table into a list in one frame; in a big world (over a
+  million objects) that was a 30 ms stall every `HostScanInterval` seconds, plain to see in
+  a profiler and felt as a micro-stutter. The pass now walks the game's own per-sector lists,
+  a slice per frame, with nothing copied. Same objects, same result.
+
 ## 0.2.2
 
 - Package page: the crops animation now runs from planting to harvest; HostOwner is a link to
