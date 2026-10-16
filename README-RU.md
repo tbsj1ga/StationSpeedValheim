@@ -190,6 +190,7 @@ zip-пакеты — см. `.gitignore`.
 | [![HudLayout](https://raw.githubusercontent.com/tbsj1ga/HudLayoutValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/HudLayout/) | **[HudLayout](https://thunderstore.io/c/valheim/p/j1gA/HudLayout/)** — Перемещайте, масштабируйте и меняйте вид HUD мышью: полосы, еда, панель предметов, миникарта, даже HUD других модов. |
 | [![HealthPulse](https://raw.githubusercontent.com/tbsj1ga/HealthPulseValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/HealthPulse/) | **[HealthPulse](https://thunderstore.io/c/valheim/p/j1gA/HealthPulse/)** — при низком здоровье края экрана пульсируют красным, как сердце. |
 | [![ChestReach](https://raw.githubusercontent.com/tbsj1ga/ChestReachValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/ChestReach/) | **[ChestReach](https://thunderstore.io/c/valheim/p/j1gA/ChestReach/)** — крафт, стройка, заправка и готовка из сундуков вокруг — без тормозов, игроки без мода могут зайти. |
+| [![SwimGear](https://raw.githubusercontent.com/tbsj1ga/SwimGearValheim/main/docs/media/icon-128.png)](https://thunderstore.io/c/valheim/p/j1gA/SwimGear/) | **[SwimGear](https://thunderstore.io/c/valheim/p/j1gA/SwimGear/)** — оружие и инструменты остаются в руках, пока плывёшь, и FPS не проседает. |
 
 ## Помощь ИИ
 
