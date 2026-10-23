@@ -82,7 +82,7 @@ m_secPerProduct` в секунду), так что уголь на слиток 
 
 ## Совместимость
 
-Проверено на **Valheim 1.0.16** (network version 40), **BepInEx 5.4.23.5** (BepInExPack_Valheim 5.4.2351).
+Проверено на **Valheim 1.0.20** (network version 41), **BepInEx 5.4.23.5** (BepInExPack_Valheim 5.4.2351).
 
 ## Кому ставить
 
